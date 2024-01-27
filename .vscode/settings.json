@@ -51,5 +51,5 @@
         "temp/": true,
         "Temp/": true
     },
-    "dotnet.defaultSolution": "Rain Glider.sln"
+    "dotnet.defaultSolution": "Rain-Glider.sln"
 }

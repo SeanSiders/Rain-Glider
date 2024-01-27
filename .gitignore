@@ -72,3 +72,9 @@ crashlytics-build.properties
 /[Aa]ssets/[Ss]treamingAssets/aa/*
 
 .DS_Store
+
+# Blender backup files
+*.blend1
+
+# Local conigs
+.vscode
