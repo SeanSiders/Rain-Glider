@@ -6,17 +6,18 @@ using UnityEngine.InputSystem;
 [RequireComponent(typeof(Rigidbody))]
 public class MCController : MonoBehaviour
 {
+   public float speed = 40f;
+   public float jumpForce = 10f;
    public Transform groundCollider;
+   public Transform player;
+   public float playerRotationSpeed = 5f;
+
+   
    private PlayerInputActions _playerInputActions;
    private InputAction _moveAction;
    private InputAction _lookAction;
    private Rigidbody _rigidbody;
-   
-   public float speed = 40f;
-   public float jumpForce = 10f;
-
    private LayerMask _groundLayerMask;
-
    private bool _isGrounded;
 
    private void Awake()
@@ -66,7 +67,7 @@ public class MCController : MonoBehaviour
     // Update is called once per frame
     private void FixedUpdate()
     {
-      _isGrounded = Physics.Raycast(groundCollider.position, Vector3.down, 0.05f, _groundLayerMask); 
+      _isGrounded = Physics.Raycast(groundCollider.position, Vector3.down, 0.5f, _groundLayerMask); 
 
       Vector2 moveDirection = _moveAction.ReadValue<Vector2>();
       Vector3 velocity = _rigidbody.velocity;
@@ -76,6 +77,6 @@ public class MCController : MonoBehaviour
 
       _rigidbody.velocity = velocity;
 
-      Vector2 lookDirection = _lookAction.ReadValue<Vector2>();
+      transform.Rotate(playerRotationSpeed * moveDirection.x * Time.deltaTime * Vector3.up);
     }
 }
