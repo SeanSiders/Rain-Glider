@@ -3,55 +3,52 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
-[RequireComponent(typeof(Rigidbody))]
 public class MCController : MonoBehaviour
 {
-   public float speed = 40f;
-   public float jumpForce = 10f;
-   public Transform groundCollider;
-   public Transform player;
-   public float playerRotationSpeed = 5f;
+    public float topSpeed = 1f;
+    public float acceleration = 0.2f;
+    public Transform player;
+    public float playerRotationSpeed = 5f;
 
+    private Vector3 velocity;
    
-   private PlayerInputActions _playerInputActions;
-   private InputAction _moveAction;
-   private InputAction _lookAction;
-   private Rigidbody _rigidbody;
-   private LayerMask _groundLayerMask;
-   private bool _isGrounded;
+    private PlayerInputActions _playerInputActions;
+    private InputAction _moveAction;
+    private InputAction _lookAction;
+    private LayerMask _groundLayerMask;
+    private bool _isGrounded;
 
-   private void Awake()
-   {
-      _playerInputActions = new PlayerInputActions();
-      _rigidbody = GetComponent<Rigidbody>();
+    private void Awake()
+    {
+        _playerInputActions = new PlayerInputActions();
 
-      _groundLayerMask = LayerMask.GetMask("Ground");
-   }
+        _groundLayerMask = LayerMask.GetMask("Ground");
+    }
 
-   private void OnEnable()
-   {
-      _moveAction = _playerInputActions.Player.Move;
-      _moveAction.Enable();
+    private void OnEnable()
+    {
+        _moveAction = _playerInputActions.Player.Move;
+        _moveAction.Enable();
 
-      _lookAction = _playerInputActions.Player.Look;
-      _lookAction.Enable();
+        _lookAction = _playerInputActions.Player.Look;
+        _lookAction.Enable();
 
-      _playerInputActions.Player.Fire.Enable();
+        _playerInputActions.Player.Fire.Enable();
 
-      _playerInputActions.Player.Jump.performed += OnJump;
-      _playerInputActions.Player.Jump.Enable();
-   }
+        _playerInputActions.Player.Jump.performed += OnJump;
+        _playerInputActions.Player.Jump.Enable();
+    }
 
-   private void OnDisable()
-   {
-      _moveAction.Disable();
-      _lookAction.Disable();
+    private void OnDisable()
+    {
+        _moveAction.Disable();
+        _lookAction.Disable();
 
-      _playerInputActions.Player.Fire.Disable();
+        _playerInputActions.Player.Fire.Disable();
 
-      _playerInputActions.Player.Jump.performed -= OnJump;
-      _playerInputActions.Player.Jump.Disable();
-   }
+        _playerInputActions.Player.Jump.performed -= OnJump;
+        _playerInputActions.Player.Jump.Disable();
+    }
 
     // Start is called before the first frame update
     void Start()
@@ -60,23 +57,65 @@ public class MCController : MonoBehaviour
 
     private void OnJump(InputAction.CallbackContext context)
     {
-      if (_isGrounded)
-         _rigidbody.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+        if (_isGrounded)
+        {
+            Debug.Log("JUMP");
+            velocity.y = 1.0f;
+        }
     }
 
     // Update is called once per frame
     private void FixedUpdate()
     {
-      _isGrounded = Physics.Raycast(groundCollider.position, Vector3.down, 0.5f, _groundLayerMask); 
+        Vector3 toGround = 2.0f * Vector3.down;
 
-      Vector2 moveDirection = _moveAction.ReadValue<Vector2>();
-      Vector3 velocity = _rigidbody.velocity;
+        RaycastHit hit;
+        _isGrounded = Physics.Raycast(transform.position, Vector3.down, out hit, toGround.magnitude, _groundLayerMask);
 
-      velocity.x = speed * moveDirection.x;
-      velocity.z = speed * moveDirection.y;
+        if (_isGrounded)
+        {
+            if (velocity.y < 0) velocity.y = 0;
+            transform.position = hit.point - 0.8f * toGround;
+        }
+        else
+        {
+            velocity += 0.05f * Vector3.down;
+        }
 
-      _rigidbody.velocity = velocity;
+        InputMovement();
+        RotateTowardsMovement();
 
-      transform.Rotate(playerRotationSpeed * moveDirection.x * Time.deltaTime * Vector3.up);
+        transform.Translate(velocity, Space.World);
+    }
+    private void InputMovement()
+    {
+        Vector2 moveDirection = _moveAction.ReadValue<Vector2>();
+
+        // Get the direction that the player is trying to move in
+        Vector3 components = moveDirection.x * Camera.main.transform.right + moveDirection.y * Camera.main.transform.forward;
+        components.y = 0.0f;
+
+        // Treat no input as "STOP". Otherwise move in that direction.
+        if (moveDirection.magnitude <= 0.0)
+        {
+            velocity -= 0.1f * velocity;
+        }
+        else
+        {
+            velocity += acceleration * components;
+
+            Vector3 flatMotion = Vector3.ClampMagnitude(new(velocity.x, 0.0f, velocity.z), topSpeed);
+            velocity.x = flatMotion.x;
+            velocity.z = flatMotion.z;
+        }
+    }
+
+    private void RotateTowardsMovement()
+    {
+        Vector3 lookDirection = new(velocity.x, 0.0f, velocity.z);
+        if (lookDirection.magnitude > 0.01f)
+        {
+            transform.rotation = Quaternion.RotateTowards(transform.rotation, Quaternion.LookRotation(lookDirection), playerRotationSpeed);
+        }
     }
 }
