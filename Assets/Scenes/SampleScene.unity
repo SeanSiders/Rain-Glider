@@ -38,7 +38,7 @@ RenderSettings:
   m_ReflectionIntensity: 1
   m_CustomReflection: {fileID: 0}
   m_Sun: {fileID: 705507994}
-  m_IndirectSpecularColor: {r: 0.44657886, g: 0.49641275, b: 0.5748176, a: 1}
+  m_IndirectSpecularColor: {r: 0.44657898, g: 0.4964133, b: 0.5748178, a: 1}
   m_UseRadianceAmbientProbe: 0
 --- !u!157 &3
 LightmapSettings:
@@ -156,7 +156,6 @@ Transform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 697218796}
-  - {fileID: 963194228}
   - {fileID: 426714936}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -222,9 +221,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ad7b5aa3daf242228df75aa19fe6518, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 40
-  jumpForce: 10
-  groundCollider: {fileID: 426714936}
+  topSpeed: 1
+  acceleration: 0.2
   player: {fileID: 697218796}
   playerRotationSpeed: 10
 --- !u!1 &155683419
@@ -288,7 +286,7 @@ MeshRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 2100000, guid: b603ff4b5e61b4c708e4faaf95415734, type: 2}
+  - {fileID: 2100000, guid: 84c2ad8801460c7498ec6d696ab3b94d, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -550,11 +548,11 @@ Transform:
   m_GameObject: {fileID: 963194225}
   serializedVersion: 2
   m_LocalRotation: {x: 0.07216679, y: -0, z: -0, w: 0.99739265}
-  m_LocalPosition: {x: 3.52, y: 9.930001, z: -17.900002}
+  m_LocalPosition: {x: 3.5175548, y: 17.380001, z: -18.026978}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 116700428}
+  m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 8.277, y: 0, z: 0}
 --- !u!114 &963194229
 MonoBehaviour:
@@ -565,12 +563,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 963194225}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 1a781a85912104e5e98b7d147b69efe0, type: 3}
+  m_Script: {fileID: 11500000, guid: 2603e38ee6a863149b693e0ca476c763, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   target: {fileID: 116700428}
-  smoothSpeed: 0.2
-  offset: {x: 3, y: 5, z: -20}
+  focusTargetDistanceBuffer: 15
+  cameraTargetDistanceBuffer: 20
+  targetClosest: 15
 --- !u!1 &1665148648
 GameObject:
   m_ObjectHideFlags: 0
@@ -733,7 +732,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 23.2, z: 90.2}
-  m_LocalScale: {x: 3.5544, y: 18.067278, z: 3.5544}
+  m_LocalScale: {x: 3.5544, y: 180.06728, z: 3.5544}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
@@ -864,6 +863,7 @@ SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
   - {fileID: 705507995}
+  - {fileID: 963194228}
   - {fileID: 116700428}
   - {fileID: 155683423}
   - {fileID: 1732991302}
